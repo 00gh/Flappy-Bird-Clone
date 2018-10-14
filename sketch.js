@@ -19,21 +19,22 @@ var pipeBodySprite;
 var pipePeakSprite;
 var bgImg;
 var bgX;
-var gameoverFrame=0;
+var gameoverFrame = 0;
+var isOver = false;
 
 var touched = false;
 var prevTouched = touched;
 
 
 function preload() {
-  pipeBodySprite = loadImage('./graphics/pipe_body.png');
-  pipePeakSprite = loadImage('./graphics/pipe_body.png');
+  pipeBodySprite = loadImage('graphics/pipe_marshmallow_fix.png');
+  pipePeakSprite = loadImage('graphics/pipe_marshmallow_fix.png');
   birdSprite = loadImage('graphics/train.png');
   bgImg = loadImage('graphics/background.png');
 }
 
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(800, 600);
   reset();
 }
 
@@ -75,7 +76,7 @@ function draw() {
   bird.update();
   bird.show();
 
-  if ((frameCount-gameoverFrame) % 150 == 0) {
+  if ((frameCount - gameoverFrame) % 150 == 0) {
     pipes.push(new Pipe());
   }
 
@@ -89,14 +90,14 @@ function draw() {
 
   // if user has touched then make bird jump
   // also checks if not touched before
-  if (touched && !prevTouched){
+  if (touched && !prevTouched) {
     bird.up();
   }
 
   // updates prevTouched
   prevTouched = touched;
 
-  
+
 }
 
 function showScores() {
@@ -107,22 +108,32 @@ function showScores() {
 
 function gameover() {
   textSize(64);
-  text('HIT', width / 2, height / 2);
+  textAlign(CENTER, CENTER);
+  text('GAMEOVER', width / 2, height / 2);
+  textAlign(LEFT, BASELINE);
   maxScore = max(score, maxScore);
-  score = 0;
-  reset();
+  isOver = true;
+  noLoop();
 }
 
 function reset() {
+  isOver = false;
+  score = 0;
   bgX = 0;
   pipes = [];
   bird = new Bird();
   pipes.push(new Pipe());
-  gameoverFrame=frameCount-1;
+  gameoverFrame = frameCount - 1;
+  loop();
 }
 
 function keyPressed() {
   if (key === ' ') {
     bird.up();
+    if (isOver) reset(); //you can just call reset() in Machinelearning if you die, because you cant simulate keyPress with code.
   }
+}
+
+function touchStarted() {
+  if (isOver) reset();
 }
